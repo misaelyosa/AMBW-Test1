@@ -1,0 +1,44 @@
+{
+    "users" :  [
+    {
+        "id": 1,
+        "name": "Admin User",
+        "email": "admin@pwitter.com",
+        "auth_status" : false
+    },
+    {
+        "id": 2,
+        "name": "Budi Doremi",
+        "email": "budi@gmail.com",
+        "auth_status" : false
+    }
+  ],
+  "posts": [
+    {
+        "id": 1,
+        "userId": 1,
+        "title": "Hello Pwitter!",
+        "content": "Post pertama gwej"
+    },
+    {
+        "id": 2,
+        "userId": 2,
+        "title": "Hawhaw",
+        "content": "wkwkwkwkwk!"
+    }
+  ],
+  "comments": [
+    {
+        "id": 1,
+        "postId": 1,
+        "userId": 2,
+        "content": "Nice post!"
+    },
+    {
+        "id": 2,
+        "postId": 2,
+        "userId": 1,
+        "content": "hidup jokowi!"
+    }
+  ]
+}
