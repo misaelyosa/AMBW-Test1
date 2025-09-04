@@ -1,33 +1,37 @@
 {
-  "users": [
-    {
-      "id": 1,
-      "name": "Admin Pwitter",
-      "email": "admin@gmail.com",
-      "password": "admin123"
-    },
-    {
-      "id": 2,
-      "name": "Budi Doremi",
-      "email": "budi@gmail.com",
-      "password": "budi123"
-    }
-  ],
   "posts": [
     {
-      "id": 1,
-      "userId": 1,
-      "title": "Hello Pwitter!",
-      "content": "Post pertama gwej"
+      "id": "1",
+      "title": "JSON Server Tutorial",
+      "userId": "2",
+      "content": "This is a great tool for mocking APIs."
     },
     {
-      "id": 2,
-      "userId": 2,
-      "title": "Hawhaw",
-      "content": "wkwkwkwkwk!"
+      "id": "2",
+      "title": "Understanding REST APIs",
+      "userId": "3",
+      "content": "A guide to the principles of RESTful architecture."
     },
     {
-      "id": 3,
+      "id": "9f76",
+      "title": "Simple PWA Tutorial",
+      "content": "Introduction to PWA",
+      "userId": "1"
+    },
+    {
+      "id": "34dc",
+      "title": "Just Another PWA Tutorial",
+      "content": "Part 2 of Simple PWA Tutorial",
+      "userId": "1"
+    },
+    {
+      "id": "2a06",
+      "title": "halo",
+      "content": "Saya admin",
+      "userId": 1
+    },
+    {
+      "id": "7d27",
       "title": "halo",
       "content": "Saya admin",
       "userId": 1
@@ -35,28 +39,64 @@
   ],
   "comments": [
     {
-      "id": 1,
-      "postId": 1,
-      "userId": 2,
-      "content": "Nice post!"
+      "id": "1",
+      "body": "Excellent article!",
+      "postId": "1"
     },
     {
-      "id": 2,
-      "postId": 2,
-      "userId": 1,
-      "content": "hidup jokowi!"
+      "id": "2",
+      "body": "Very informative.",
+      "postId": "2"
     },
     {
-      "id": 3,
-      "postId": 1,
-      "userId": 1,
-      "content": "aaa"
+      "id": "3",
+      "body": "Thank you for your tutorial.",
+      "postId": "1"
     },
     {
-      "id": 4,
-      "postId": 3,
-      "userId": 1,
-      "content": "awawa"
+      "id": "f987",
+      "postId": "9f76",
+      "body": "Looking forward for next chapter"
+    },
+    {
+      "id": "33ff",
+      "postId": "34dc",
+      "body": "awawa"
+    },
+    {
+      "id": "7745",
+      "postId": "2a06",
+      "body": "wiwuiw"
+    },
+    {
+      "id": "1263",
+      "postId": "2a06",
+      "body": "awawa"
+    },
+    {
+      "id": "adb4",
+      "postId": "1",
+      "body": "Mantap betul"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "Admin User",
+      "username": "admin",
+      "password": "admin"
+    },
+    {
+      "id": "2",
+      "name": "John Doe",
+      "username": "john",
+      "password": "passwordjohn"
+    },
+    {
+      "id": "3",
+      "name": "Jane Smith",
+      "username": "jane",
+      "password": "passwordjane"
     }
   ]
 }

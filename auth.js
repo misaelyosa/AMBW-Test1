@@ -24,7 +24,7 @@ form.addEventListener("submit", async (e) => {
         } 
         else {
             localStorage.setItem("authorizedUser", JSON.stringify({
-                id: Number(user.id),
+                id: user.id,
                 name : user.name,
                 email : user.email
             })); 

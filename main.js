@@ -28,11 +28,11 @@ async function loadPost() {
     try{
         const resPosts = await fetch("http://localhost:3000/posts");
         postCache = await resPosts.json();
-        console.log(postCache);
+        // console.log(postCache);
 
         const resComments = await fetch("http://localhost:3000/comments");
         commentCache = await resComments.json();
-        console.log(commentCache);
+        // console.log(commentCache);
 
         postContainer.innerHTML = "";
         postCache.forEach(post => {
@@ -49,16 +49,16 @@ async function loadPost() {
             displayPostContent.textContent = post.content;
 
             //filter komen per post
-            const postComments = commentCache.filter(c => Number(c.postId) === Number(post.id));
+            const postComments = commentCache.filter(c => c.postId === post.id);
             postComments.forEach(c => {
                 const commentLi = document.createElement("li"); 
-                commentLi.textContent = c.content;
+                commentLi.textContent = c.body;
                 postCommentUl.appendChild(commentLi);
             });
             
             //assign unique id buat input field komen 
             const commentInput = clonePost.querySelector("input[name='postComment']");
-            commentInput.id = `postComment-${post.id}`;
+            commentInput.id = post.id;
 
             postContainer.appendChild(clonePost);
         })
@@ -73,16 +73,12 @@ loadPost();
 async function createPost(title, content) {
     //cek input udah ada di layer ui
     try {
-        const maxId = postCache.length > 0 ? Math.max(...postCache.map(p => Number(p.id))) : 0;
-        const newId = maxId + 1;
-
         const response = await fetch("http://localhost:3000/posts", {
             method : "POST",
             headers : {
                 "Content-Type" : "application/json"
             },
             body: JSON.stringify({
-                id : Number(newId),
                 title,
                 content,
                 userId : Number(currentUser.id)
@@ -109,14 +105,12 @@ postForm.addEventListener("submit", (e) => {
     const content = document.getElementById("postContent").value;
 
     createPost(title, content);
-    title.textContent = "";
-    content.textContent = "";
     loadPost();
 });
 
 //add comment
 document.addEventListener("keydown", (e) => {
-    if(e.key === "Enter" && e.target.id.startsWith("postComment-")) {
+    if(e.key === "Enter" && e.target.name === "postComment" ) {
         e.preventDefault();
         const comment = e.target.value.trim();
         if(!comment) {
@@ -124,7 +118,7 @@ document.addEventListener("keydown", (e) => {
             return;
         } 
 
-        const postId = parseInt(e.target.id.split("-")[1], 10);
+        const postId = e.target.id;
         if(!currentUser) {
             alert("Login dulu baru komen yeah")
             return;
@@ -132,17 +126,12 @@ document.addEventListener("keydown", (e) => {
 
         (async () => {
             try {
-                const maxId = commentCache.length > 0 ? Math.max(...commentCache.map(c => Number(c.id))) : 0;
-                const newId = maxId + 1;
-
                 const response = await fetch("http://localhost:3000/comments", {
                     method : "POST",
                     headers : {"Content-Type" : "application/json"},
                     body : JSON.stringify({
-                        id : Number(newId),
-                        postId : Number(postId),
-                        userId : Number(currentUser.id),
-                        content : comment
+                        postId : String(postId),
+                        body : comment
                     })
                 });
     
@@ -161,4 +150,46 @@ document.addEventListener("keydown", (e) => {
         })();
     }
 });
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js")
+    .then(reg => {
+      console.log("Service Worker registered:", reg.scope);
+    })
+    .catch(err => {
+      console.error("Service Worker registration failed:", err);
+    });
+}
+
+//cek backend
+async function checkServerStatus() {
+  try {
+    const res = await fetch("http://localhost:3000/posts", { method: "HEAD" });
+    return res.ok; 
+  } catch {
+    return false; 
+  }
+}
+
+async function updateInputs() {
+  const notice = document.getElementById("notice");
+  const postForm = document.getElementById("postForm");
+  const commentInputs = document.querySelectorAll("input[name='postComment']");
+
+  const serverUp = await checkServerStatus();
+
+  if (!navigator.onLine || !serverUp) { //offline
+    if (notice) notice.classList.remove("hidden");
+    if (postForm) postForm.classList.add("hidden");
+    commentInputs.forEach(input => input.classList.add("hidden"));
+  } else {
+    if (notice) notice.classList.add("hidden");
+    if (postForm) postForm.classList.remove("hidden");
+    commentInputs.forEach(input => input.classList.remove("hidden"));
+  }
+}
+updateInputs();
+window.addEventListener("online", updateInputs);
+window.addEventListener("offline", updateInputs);
+
 
