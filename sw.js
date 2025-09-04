@@ -39,10 +39,10 @@ self.addEventListener('fetch', (e) => {
     e.respondWith(
         (async () => {
             try{ //network first
-                const fetch = await fetch(e.request);
+                const response = await fetch(e.request);
                 const cache = await caches.open(pwaCacheKey);
-                cache.put(e.request, fetch.clone());
-                return fetch;
+                cache.put(e.request, response.clone());
+                return response;
             } catch (error){ //offline
                 const offlineCache = await caches.match(e.request);
                 if (offlineCache) {
@@ -53,6 +53,6 @@ self.addEventListener('fetch', (e) => {
                     });
                 }
             }
-        })
+        })()
     );
 });

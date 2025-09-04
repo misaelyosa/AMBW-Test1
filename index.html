@@ -47,14 +47,12 @@
     <div id="postContainer" class="space-y-5">
         <template id="postTemplate">
             <div class="mx-10 my-5 px-5 py-3 flex flex-col space-y-3 border border-gray-300 rounded-lg bg-white">
-            <h1 id="displayPostTitle" class="text-2xl font-bold text-gray-700">$postTitle</h1>
-            <h3 id="displayPostContent" class="text-sm font-light text-gray-700">$postContent</h3>
+            <h1 class="displayPostTitle text-2xl font-bold text-gray-700">$postTitle</h1>
+            <h3 class="displayPostContent text-sm font-normal text-gray-700">$postContent</h3>
         
-                <ul id="postCommentUl" class="list-disc list-inside text-gray-600">
-                    <li id="displayPostComment">$postComment</li>
-                </ul>
+                <ul class="postCommentUl list-disc list-inside text-gray-600"></ul>
         
-                <input type="text" id="postComment" name="postComment" placeholder="Enter Comment"
+                <input type="text" name="postComment" placeholder="Enter Comment"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
         </template>

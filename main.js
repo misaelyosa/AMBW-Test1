@@ -1,5 +1,6 @@
 console.log("main js loaded");
 
+//cek auth
 const currentUser = JSON.parse(localStorage.getItem("authorizedUser"));
 console.log(currentUser);
 
@@ -35,21 +36,25 @@ async function loadPost() {
             const clonePost = postTemplate.content.cloneNode(true);
 
             //panggil element
-            const displayPostTitle = clonePost.getElementById("displayPostTitle");
-            const displayPostContent = clonePost.getElementById("displayPostContent");
-            const postCommentUl = clonePost.getElementById("postCommentUl");
-            const displayPostComment = clonePost.getElementById("displayPostComment");
+            const displayPostTitle = clonePost.querySelector(".displayPostTitle");
+            const displayPostContent = clonePost.querySelector(".displayPostContent");
+            const postCommentUl = clonePost.querySelector(".postCommentUl");
             
             //set judul , konten
             displayPostTitle.textContent = post.title;
             displayPostContent.textContent = post.content;
 
             //filter komen per post
-            const postComments = comments.filter(c => c.postId === post.id);
+            const postComments = comments.filter(c => Number(c.postId) === Number(post.id));
             postComments.forEach(c => {
-                displayPostComment.textContent = c.content;
-                postCommentUl.appendChild(displayPostComment);
+                const commentLi = document.createElement("li"); 
+                commentLi.textContent = c.content;
+                postCommentUl.appendChild(commentLi);
             });
+            
+            //assign unique id buat input field komen 
+            const commentInput = clonePost.querySelector("input[name='postComment']");
+            commentInput.id = `postComment-${post.id}`;
 
             postContainer.appendChild(clonePost);
         })
@@ -57,6 +62,8 @@ async function loadPost() {
         console.error("Post load error : ", e);
     }
 }
+
+loadPost();
 
 //add post
 async function createPost(title, content) {
@@ -90,11 +97,52 @@ async function createPost(title, content) {
 const postForm = document.getElementById("postForm");
 postForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    
+
     const title = document.getElementById("postTitle").value;
     const content = document.getElementById("postContent").value;
 
     createPost(title, content);
 });
 
-loadPost();
+//add comment
+document.addEventListener("keydown", (e) => {
+    if(e.key === "Enter" && e.target.id.startsWith("postComment-")) {
+        e.preventDefault();
+        const comment = e.target.value.trim();
+        if(!comment) {
+            alert("field komen tidak terisi"); 
+            return;
+        } 
+
+        const postId = parseInt(e.target.id.split("-")[1], 10);
+        if(!currentUser) {
+            alert("Login dulu baru komen yeah")
+            return;
+        }
+
+        (async () => {
+            try {
+                const response = await fetch("http://localhost:3000/comments", {
+                    method : "POST",
+                    headers : {"Content-Type" : "application/json"},
+                    body : JSON.stringify({
+                        postId : postId,
+                        userId : currentUser.id,
+                        content : comment
+                    })
+                });
+    
+                if (response.ok){
+                    e.target.value = "";
+                    loadPost();
+                } else {
+                    alert("Komentar gagal ditambahkan");
+                }
+            } catch (error) {
+                console.error("Gagal menambahkan komentar", error)
+                alert("Komentar gagal ditambahkan");
+            }
+        })();
+    }
+});
+
