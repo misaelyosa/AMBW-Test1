@@ -203,6 +203,9 @@
   .mt-1 {
     margin-top: calc(var(--spacing) * 1);
   }
+  .mt-2 {
+    margin-top: calc(var(--spacing) * 2);
+  }
   .mt-3 {
     margin-top: calc(var(--spacing) * 3);
   }
@@ -425,6 +428,9 @@
   }
   .text-gray-800 {
     color: var(--color-gray-800);
+  }
+  .text-red-500 {
+    color: var(--color-red-500);
   }
   .text-white {
     color: var(--color-white);

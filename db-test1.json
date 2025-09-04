@@ -2,15 +2,15 @@
     "users" :  [
     {
         "id": 1,
-        "name": "Admin User",
-        "email": "admin@pwitter.com",
-        "auth_status" : false
+        "name": "Admin Pwitter",
+        "email": "admin@gmail.com",
+        "password" : "admin123"
     },
     {
         "id": 2,
         "name": "Budi Doremi",
         "email": "budi@gmail.com",
-        "auth_status" : false
+        "password": "budi123"
     }
   ],
   "posts": [
