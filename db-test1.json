@@ -25,6 +25,12 @@
       "userId": 2,
       "title": "Hawhaw",
       "content": "wkwkwkwkwk!"
+    },
+    {
+      "id": 3,
+      "title": "halo",
+      "content": "Saya admin",
+      "userId": 1
     }
   ],
   "comments": [
@@ -39,6 +45,18 @@
       "postId": 2,
       "userId": 1,
       "content": "hidup jokowi!"
+    },
+    {
+      "id": 3,
+      "postId": 1,
+      "userId": 1,
+      "content": "aaa"
+    },
+    {
+      "id": 4,
+      "postId": 3,
+      "userId": 1,
+      "content": "awawa"
     }
   ]
 }

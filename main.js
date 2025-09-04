@@ -21,17 +21,21 @@ logout.addEventListener("click", () => {
 //load post
 const postContainer = document.getElementById("postContainer");
 const postTemplate = document.getElementById("postTemplate");
+let postCache = [];
+let commentCache = [];
 
 async function loadPost() {
     try{
         const resPosts = await fetch("http://localhost:3000/posts");
-        const posts = await resPosts.json();
+        postCache = await resPosts.json();
+        console.log(postCache);
 
         const resComments = await fetch("http://localhost:3000/comments");
-        const comments = await resComments.json();
+        commentCache = await resComments.json();
+        console.log(commentCache);
 
         postContainer.innerHTML = "";
-        posts.forEach(post => {
+        postCache.forEach(post => {
             //setup template
             const clonePost = postTemplate.content.cloneNode(true);
 
@@ -45,7 +49,7 @@ async function loadPost() {
             displayPostContent.textContent = post.content;
 
             //filter komen per post
-            const postComments = comments.filter(c => Number(c.postId) === Number(post.id));
+            const postComments = commentCache.filter(c => Number(c.postId) === Number(post.id));
             postComments.forEach(c => {
                 const commentLi = document.createElement("li"); 
                 commentLi.textContent = c.content;
@@ -69,25 +73,28 @@ loadPost();
 async function createPost(title, content) {
     //cek input udah ada di layer ui
     try {
+        const maxId = postCache.length > 0 ? Math.max(...postCache.map(p => Number(p.id))) : 0;
+        const newId = maxId + 1;
+
         const response = await fetch("http://localhost:3000/posts", {
             method : "POST",
             headers : {
                 "Content-Type" : "application/json"
             },
             body: JSON.stringify({
+                id : Number(newId),
                 title,
                 content,
-                userId : currentUser.id
+                userId : Number(currentUser.id)
             })
         });
 
         if (!response.ok) alert ("Gagal menambahkan post");
 
         const newPost = await response.json();
+        postCache.push(newPost);
         console.log("new post", newPost);
         alert("Post berhasil ditambahkan");
-
-        loadPost();
     } catch (error){
         console.error("Error create post", error);
         alert("gagal menambahkan post.")
@@ -102,6 +109,9 @@ postForm.addEventListener("submit", (e) => {
     const content = document.getElementById("postContent").value;
 
     createPost(title, content);
+    title.textContent = "";
+    content.textContent = "";
+    loadPost();
 });
 
 //add comment
@@ -122,18 +132,24 @@ document.addEventListener("keydown", (e) => {
 
         (async () => {
             try {
+                const maxId = commentCache.length > 0 ? Math.max(...commentCache.map(c => Number(c.id))) : 0;
+                const newId = maxId + 1;
+
                 const response = await fetch("http://localhost:3000/comments", {
                     method : "POST",
                     headers : {"Content-Type" : "application/json"},
                     body : JSON.stringify({
-                        postId : postId,
-                        userId : currentUser.id,
+                        id : Number(newId),
+                        postId : Number(postId),
+                        userId : Number(currentUser.id),
                         content : comment
                     })
                 });
     
                 if (response.ok){
                     e.target.value = "";
+                    const newComment = await response.json();
+                    commentCache.push(newComment);
                     loadPost();
                 } else {
                     alert("Komentar gagal ditambahkan");
