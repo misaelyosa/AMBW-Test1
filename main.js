@@ -58,4 +58,43 @@ async function loadPost() {
     }
 }
 
+//add post
+async function createPost(title, content) {
+    //cek input udah ada di layer ui
+    try {
+        const response = await fetch("http://localhost:3000/posts", {
+            method : "POST",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({
+                title,
+                content,
+                userId : currentUser.id
+            })
+        });
+
+        if (!response.ok) alert ("Gagal menambahkan post");
+
+        const newPost = await response.json();
+        console.log("new post", newPost);
+        alert("Post berhasil ditambahkan");
+
+        loadPost();
+    } catch (error){
+        console.error("Error create post", error);
+        alert("gagal menambahkan post.")
+    }
+}
+
+const postForm = document.getElementById("postForm");
+postForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    
+    const title = document.getElementById("postTitle").value;
+    const content = document.getElementById("postContent").value;
+
+    createPost(title, content);
+});
+
 loadPost();
