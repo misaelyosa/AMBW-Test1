@@ -5,11 +5,11 @@ const errorMsg = document.getElementById("error");
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById("email").value;
+    const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
     try {
-        const response = await fetch(`http://localhost:3000/users?email=${email}`);
+        const response = await fetch(`http://localhost:3000/users?username=${username}`);
         const users = await response.json();
 
         if (users.length === 0){
@@ -26,7 +26,7 @@ form.addEventListener("submit", async (e) => {
             localStorage.setItem("authorizedUser", JSON.stringify({
                 id: user.id,
                 name : user.name,
-                email : user.email
+                username : user.username
             })); 
             console.log("data user masuk local")
         }

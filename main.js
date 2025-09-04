@@ -164,7 +164,10 @@ if ("serviceWorker" in navigator) {
 //cek backend
 async function checkServerStatus() {
   try {
-    const res = await fetch("http://localhost:3000/posts", { method: "HEAD" });
+    const res = await fetch("http://localhost:3000/posts?ping=" + Date.now(), {
+      method: "GET",
+      cache: "no-store"
+    });
     return res.ok; 
   } catch {
     return false; 
@@ -179,10 +182,12 @@ async function updateInputs() {
   const serverUp = await checkServerStatus();
 
   if (!navigator.onLine || !serverUp) { //offline
+    alert("koneksi terputus")
     if (notice) notice.classList.remove("hidden");
     if (postForm) postForm.classList.add("hidden");
     commentInputs.forEach(input => input.classList.add("hidden"));
   } else {
+    alert("koneksi online")
     if (notice) notice.classList.add("hidden");
     if (postForm) postForm.classList.remove("hidden");
     commentInputs.forEach(input => input.classList.remove("hidden"));
