@@ -1,24 +1,23 @@
-const pwaCacheKey = 'cache-2';
+const pwaCacheKey = 'cache-3';
 const staticCaches = [
     '/',
     '/index.html',
     '/auth.html',
+    '/manifest.json',
+    '/main.js',
+    '/auth.js'
 ]
+const API_ORIGIN = 'http://localhost:3000';
 
+//cache static
 self.addEventListener('install', (e) => {
     let cacheReady = caches.open(pwaCacheKey).then((cache) => {
-        // return cache.add('/');
-        // return cache.addAll([
-        //     '/',
-        //     'main.css',
-        //     'page2.html',
-        // ]);
         return cache.addAll(staticCaches);
     });
-
     e.waitUntil(cacheReady);
 });
 
+//activate -> delete old cache
 self.addEventListener('activate', (e) => {
     let cacheCleaned = caches.keys().then((keys) => {
         keys.forEach((key) => {
@@ -28,85 +27,32 @@ self.addEventListener('activate', (e) => {
     e.waitUntil(cacheCleaned);
 });
 
-// self.addEventListener('fetch', (e) => {
-//     // only intercept request made to our domain
-//     if (!e.request.url.match(location.origin)) return;
+//network first cahce buat fetch post 
+self.addEventListener('fetch', (e) => {
+    const url = new URL(e.request.url);
 
-    // intercept certain file and replace with another file
-    // if (e.request.url.endsWith('main.css')) {
-    //     console.log(`Fetch Event: ${e.request.url}`);
-    //     e.respondWith(fetch("/main2.css"));
-    // }
+    const API = url.origin === API_ORIGIN &&
+    (url.pathname.startsWith('/posts') || url.pathname.startsWith('/comments'));
 
-    //check if camera_feed available else return content from cache as "offline content"
-    // if (e.request.url.endsWith('/camera_feed.html')) {
-    //     e.respondWith(
-    //         fetch(e.request)
-    //             .then((res) => {
-    //                 if (res.ok) return res;
-    //                 // return new Response('Camera feed currently not available.')
-    //                 return caches.open(pwaCacheKey).then((cache) => cache.match('/camera_feed_unavailable.html'))
-    //             })
-    //     )
-    //     return;
-    // }
+    if(!API) return;
 
-    //1. Cache Only
-    // return e.respondWith(caches.open(pwaCacheKey).then((cache) => cache.match(e.request)));
-
-    //2. Cache first then network
-    // return e.respondWith(caches.open(pwaCacheKey).then((cache) => {
-    //     return cache.match(e.request).then((res) => {
-    //         if (res) { return res; }
-    //         return fetch(e.request).then((fetchRes) => {
-    //             if (fetchRes.ok)
-    //                 cache.put(e.request, fetchRes.clone())
-    //             return fetchRes;
-    //         });
-    //     });
-    // }));
-
-    // 3. Network first then cache
-    // return e.respondWith(
-    //     fetch(e.request).then((fetchRes) => {
-    //         if (fetchRes.ok)
-    //             caches.open(pwaCacheKey).then(cache => cache.put(e.request, fetchRes));
-    //         return fetchRes.clone();
-    //     }).catch((err) => caches.match(e.request))
-    // );
-
-    // 4. Cache with network update
-    // return e.respondWith(
-    //     caches.open(pwaCacheKey).then((cache) => {
-    //         return cache.match(e.request).then((res) => {
-    //             let updatedRes = fetch(e.request).then((fetchRes) => {
-    //                 if (fetchRes.ok)
-    //                     cache.put(e.request, fetchRes.clone());
-    //                 return fetchRes;
-    //             });
-    //             return res || updatedRes;
-    //         })
-    //     })
-    // );
-
-    // 5. Cache & network race
-    // let firstResponse = new Promise((resolve, reject) => {
-    //     let firstRejectionReceived = false;
-    //     let rejectOnce = () => {
-    //         firstRejectionReceived ? reject('No Response') : firstRejectionReceived = true;
-    //     }
-    //     fetch(e.request).then((fetchRes) => {
-    //         if (fetchRes.ok) {
-    //             caches.open(pwaCacheKey).then(cache => cache.put(e.request, fetchRes));
-    //             resolve(fetchRes.clone());
-    //         } else
-    //             rejectOnce();
-    //     }).catch(rejectOnce);
-    //     caches.open(pwaCacheKey).then((cache) =>
-    //         cache.match(e.request).then((res) => {
-    //             res.ok ? resolve(res) : rejectOnce();
-    //         })
-    //     ).catch(rejectOnce);
-    // })
-    // e.respondWith(firstResponse);
-// });
+    e.respondWith(
+        (async () => {
+            try{ //network first
+                const fetch = await fetch(e.request);
+                const cache = await caches.open(pwaCacheKey);
+                cache.put(e.request, fetch.clone());
+                return fetch;
+            } catch (error){ //offline
+                const offlineCache = await caches.match(e.request);
+                if (offlineCache) {
+                    return offlineCache;
+                } else {
+                    return new Response('[]', {
+                        headers: {'Content-Type' : 'application/json'},
+                    });
+                }
+            }
+        })
+    );
+});

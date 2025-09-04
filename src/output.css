@@ -194,6 +194,9 @@
   .relative {
     position: relative;
   }
+  .static {
+    position: static;
+  }
   .mx-10 {
     margin-inline: calc(var(--spacing) * 10);
   }
